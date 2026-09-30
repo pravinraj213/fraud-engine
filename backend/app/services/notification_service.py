@@ -8,10 +8,23 @@ from app.database import SessionLocal
 from app.enums import RiskLevel
 from app.models import RiskAssessment
 from app.notifications.base import AlertPayload, Notifier
+from app.notifications.factory import get_notifier
 from app.repositories import assessments, notifications
+from app.services.errors import ConflictError
 from app.timeutils import as_utc, utcnow
 
 logger = logging.getLogger(__name__)
+
+
+def configured_notifier(settings: Settings, enabled: bool) -> Notifier:
+    """Switch delivery using only server-configured recipients; never send a test email."""
+    if enabled and (not settings.ses_sender_email or not settings.alert_recipients):
+        raise ConflictError("Configure SES_SENDER_EMAIL and ALERT_RECIPIENT_EMAIL before enabling email.")
+    try:
+        return get_notifier(settings.model_copy(update={"notifier": "ses" if enabled else "log"}))
+    except Exception as exc:
+        logger.exception("Could not initialize the email notifier")
+        raise ConflictError("Email could not be enabled. Check the server's AWS profile and SES configuration.") from exc
 
 
 def alerts_sent_last_24h(session: Session) -> int:

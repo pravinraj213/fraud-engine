@@ -75,8 +75,8 @@ export default function ManualTransactionForm({ system, onCreated }) {
               OK to send 1 real email if HIGH
             </label>
           )}
-          <button className="btn-primary" disabled={busy || (emailOn && !acknowledged)}>
-            {busy ? "Sending…" : "Send transaction"}
+          <button className="btn-primary" disabled={!system || busy || (emailOn && !acknowledged)}>
+            {!system ? "Loading alert settings…" : busy ? "Sending…" : "Send transaction"}
           </button>
         </div>
       </form>

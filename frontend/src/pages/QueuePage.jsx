@@ -50,8 +50,8 @@ export default function QueuePage() {
   return (
     <section>
       <div className="queue-head">
-        <h1>Review queue</h1>
-        {data && <span className="muted small">{data.total} {data.total === 1 ? "transaction" : "transactions"}</span>}
+        <div><span className="eyebrow">INVESTIGATIONS</span><h1>Review queue</h1><p className="muted">Prioritize flagged activity, inspect the evidence, and record your decision.</p></div>
+        <div className="queue-tools">{data && <span className="muted small">{data.total} {data.total === 1 ? "transaction" : "transactions"} · refreshes every 10s</span>}<button onClick={load}>Refresh queue</button></div>
       </div>
       <Filters filters={filters} onChange={update} />
       {error && (
@@ -65,7 +65,7 @@ export default function QueuePage() {
         <p className="empty">
           {filters.status === "FLAGGED" && !filters.risk_level && !filters.account_id
             ? <>Nothing waiting for review. Generate some traffic in the <Link to="/simulator">simulator</Link>.</>
-            : "No transactions match these filters."}
+            : <>No transactions match these filters. <button className="btn-link" onClick={() => update(DEFAULTS)}>Reset filters</button></>}
         </p>
       )}
       {data && data.items.length > 0 && (

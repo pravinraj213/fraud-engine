@@ -115,7 +115,7 @@ export default function SimulatorPage() {
           <h1>Transaction simulator</h1>
           <p className="muted">
             Send realistic normal and fraudulent traffic to the API and check each verdict against the expected
-            result. Everything it creates appears in the review queue.
+            result. Transactions that trigger a rule appear in the review queue.
           </p>
         </div>
       </header>
@@ -145,8 +145,8 @@ export default function SimulatorPage() {
           ))}
         </div>
         <div className="run-bar">
-          <button className="btn-primary" disabled={running || chosen.length === 0 || blocked} onClick={run}>
-            {running ? "Running…" : `Run ${chosen.length} scenario${chosen.length === 1 ? "" : "s"}`}
+          <button className="btn-primary" disabled={!system || running || chosen.length === 0 || blocked} onClick={run}>
+            {!system ? "Loading alert settings…" : running ? "Running…" : `Run ${chosen.length} scenario${chosen.length === 1 ? "" : "s"}`}
           </button>
           <span className="muted small">
             {totalRequests} transactions{emails > 0 && `, ${emails} expected HIGH`}

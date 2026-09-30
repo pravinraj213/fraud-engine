@@ -55,7 +55,8 @@ def test_daily_limit_stops_sending(client: TestClient, notifier: FakeNotifier, s
     assert "Daily alert limit reached" in rows[0].error
     system = client.get("/api/system").json()
     assert system == {"notifier": "log", "alert_daily_limit": 2, "alerts_sent_24h": 2,
-                      "medium_threshold": 40, "high_risk_threshold": 70}
+                      "medium_threshold": 40, "high_risk_threshold": 70,
+                      "alert_recipients": [], "email_configured": False}
 
 
 def test_unexpected_exception_is_swallowed(client: TestClient) -> None:

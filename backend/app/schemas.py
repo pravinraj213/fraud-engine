@@ -115,6 +115,13 @@ class SystemOut(BaseModel):
     alerts_sent_24h: int
     medium_threshold: int
     high_risk_threshold: int
+    alert_recipients: list[str]
+    email_configured: bool
+
+
+class NotificationModeIn(BaseModel):
+    model_config = {"extra": "forbid"}
+    enabled: bool = Field(strict=True)
 
 
 class RuleOut(BaseModel):

@@ -77,6 +77,14 @@ def test_html_escapes_user_values() -> None:
     assert "<script>" not in html and "&lt;script&gt;" in html
 
 
+def test_email_escapes_rule_evidence_and_link_attributes() -> None:
+    html = render_html(replace(ALERT, hits=[("custom_<rule>", 90, '<img src=x onerror="bad()">')],
+                               console_url='https://console.test/transactions/t-1?note="quoted"&a=1'))
+    assert "<img" not in html
+    assert "&lt;img" in html and "&lt;Rule&gt;" in html
+    assert 'href="https://console.test/transactions/t-1?note=&quot;quoted&quot;&amp;a=1"' in html
+
+
 def test_log_notifier_always_succeeds(caplog: pytest.LogCaptureFixture) -> None:
     assert LogNotifier().send_high_risk_alert(ALERT).success
     assert "[HIGH RISK 90]" in caplog.text

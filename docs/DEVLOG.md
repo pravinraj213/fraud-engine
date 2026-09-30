@@ -94,3 +94,26 @@ alert links pointed to localhost.
   disabled until a name is set, FLAGGED → REVIEWED → CLEARED leaves 2 history entries and no buttons,
   there's no horizontal overflow at 390 px, dark mode works, and there are no console errors.
 - Tests: 87 passed.
+
+## 2026-09-30: Responsive console, professional alerts, and workflow guide
+
+- Refined the console hierarchy, spacing, summary cards, filters, and review panels. The queue
+  becomes labeled transaction cards on phones. Added explicit transaction buttons, keyboard focus,
+  a skip link, refresh/reset controls, and the workflow guide in navigation.
+- Rebuilt HTML alerts with a centered table layout, inline styles, mobile media queries, an inbox
+  preview, risk summary, transaction facts, readable rule evidence, and a review action. Retained
+  escaped dynamic content, plain-text delivery, and localhost link guidance.
+- Added `frontend/public/how-it-works.html`, a standalone page explaining the implemented workflow,
+  default rule thresholds, a scoring example, alerts, review transitions, and current limitations.
+- Added a header notification menu and `PUT /api/system/notifications`. The switch affects new
+  transactions in the current backend process and resets on restart. It uses server-configured
+  recipients only; the endpoint rejects recipient overrides. Initialization failures preserve the
+  previous mode. No delivery is triggered by switching modes.
+- Restricted the local `.env` recipient list to the single Gmail address requested by the user.
+  Email remains off at startup unless enabled through startup configuration or `--email`.
+- Disabled simulator submissions until alert settings are loaded.
+- Verification: `npm run build` passed; **93 backend tests passed** (one existing Starlette/httpx
+  deprecation warning). Chromium checks passed at 1440, 768, 390, and 320 px for the queue,
+  simulator, rules, transaction detail, workflow guide, and rendered email, with no page overflow.
+  Checked notification on/off controls, recipient display, transaction navigation, and dark mode.
+  Browser APIs were mocked; no live email was sent. Gmail/Outlook delivery rendering was not tested.

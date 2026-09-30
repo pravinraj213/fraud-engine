@@ -24,8 +24,8 @@ export default function RulesPage() {
         <div>
           <h1>Rules</h1>
           <p className="muted">
-            Every registered rule and its configuration from <code>backend/rules.yaml</code>. Scores of triggered
-            rules are multiplied by their weight and summed (capped at 100).
+            Understand the signals behind each decision. Triggered rule scores are multiplied by
+            their weight, added together, and capped at 100.
           </p>
         </div>
       </header>
@@ -58,7 +58,7 @@ export default function RulesPage() {
         ))}
       </div>
       <p className="muted small">
-        To add a rule, drop one file into <code>backend/app/engine/rules/</code>; see <code>docs/ADDING_A_RULE.md</code>.
+        Rules are shown with their current configuration. <a href="/how-it-works.html#rules">Learn how each rule works →</a>
       </p>
     </div>
   );

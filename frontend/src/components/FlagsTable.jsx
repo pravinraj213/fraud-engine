@@ -33,17 +33,17 @@ export default function FlagsTable({ items, onOpen }) {
               onClick={() => onOpen(t.transaction_id)}
               onKeyDown={(e) => e.key === "Enter" && onOpen(t.transaction_id)}
             >
-              <td><RiskBadge level={t.risk_level} score={t.total_score} /></td>
-              <td title={dateTime(t.occurred_at)}>{timeAgo(t.occurred_at)}</td>
-              <td className="mono">{t.account_id}</td>
-              <td className="num">{money(t.amount, t.currency)}</td>
-              <td>{t.merchant}</td>
-              <td>{t.location_label || "–"}</td>
-              <td>
+              <td data-label="Risk"><RiskBadge level={t.risk_level} score={t.total_score} /></td>
+              <td data-label="Time" title={dateTime(t.occurred_at)}>{timeAgo(t.occurred_at)}</td>
+              <td data-label="Account" className="mono"><button className="transaction-link" onClick={(e) => { e.stopPropagation(); onOpen(t.transaction_id); }} aria-label={`Review transaction ${t.transaction_id} for ${t.account_id}`}>{t.account_id}</button></td>
+              <td data-label="Amount" className="num">{money(t.amount, t.currency)}</td>
+              <td data-label="Merchant">{t.merchant}</td>
+              <td data-label="Location">{t.location_label || "–"}</td>
+              <td data-label="Rules">
                 {t.rules_triggered.map((r) => <span key={r} className="chip">{ruleLabel(r)}</span>)}
               </td>
-              <td><StatusBadge status={t.status} /></td>
-              <td>
+              <td data-label="Status"><StatusBadge status={t.status} /></td>
+              <td data-label="Alert">
                 {t.notification_status
                   ? <span className={`alert-${t.notification_status.toLowerCase()}`}>{alertLabel(t.notification_status, t.notification_channel)}</span>
                   : <span className="muted">none</span>}

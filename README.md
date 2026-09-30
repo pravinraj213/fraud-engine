@@ -43,6 +43,17 @@ http://localhost:5173 (API docs: http://localhost:8000/docs). Ctrl+C stops every
 The easiest way to generate traffic is the **Simulator** page in the console (http://localhost:5173/simulator).
 It runs the same scenarios as the CLI, shows pass/fail per check, and lets you send single hand-made transactions.
 
+For a visual explanation of ingestion, rules, scoring, alerts, and reviewer decisions, open
+**How it works** in the navigation ([standalone HTML](frontend/public/how-it-works.html), served at `/how-it-works.html`).
+
+To enable email from the UI, open **Email alerts off** in the header, check the recipient, then select
+**Turn on email alerts**. The switch uses the server's configured SES sender and recipients; recipients
+cannot be changed through this control. It applies to new transactions in the current server process;
+restarting restores the startup setting (`./start.sh --email` starts with email enabled). Already queued
+alerts may still be delivered after switching off. The current console has no authentication, so this
+control, like review actions, is intended for a trusted local deployment. Multiple backend workers do
+not share the runtime switch. Successful initialization does not verify SES delivery permissions.
+
 Manual start, if you prefer:
 
 ```bash
@@ -110,6 +121,7 @@ file, no engine changes.
 | GET | `/api/stats` | Counts by status, open flags by level, alerts sent/failed |
 | GET | `/api/rules` | Registered rules with their weight and params |
 | GET | `/api/system` | Alert mode (`ses` or `log`), daily limit and usage, and thresholds (the console uses it to warn before email goes out) |
+| PUT | `/api/system/notifications` | `{"enabled": true \| false}` toggles email for the current server process; uses only configured recipients |
 
 Money is sent and returned as a string (`"4999.00"`); times are ISO 8601 UTC (`...Z`).
 
@@ -119,7 +131,7 @@ Money is sent and returned as a string (`"4999.00"`); times are ISO 8601 UTC (`.
 cd backend && .venv/bin/pytest -q
 ```
 
-85 tests cover the rules (every worked example in the plan), engine, repositories, API, reviews,
+93 tests cover the rules (every worked example in the plan), engine, repositories, API, reviews,
 notifications (idempotency, failures, SES via botocore Stubber) and email templates. Tests never call
 real AWS or touch `fraud.db`. Add `--cov=app/engine --cov=app/services` for coverage (99%).
 
@@ -199,7 +211,7 @@ ingest request. Hardening Phases 10–14 of the plan address these.
 | `flags.py` | `GET /api/flags`: the review queue with status, risk level, account, sort, limit and offset filters. |
 | `stats.py` | `GET /api/stats`: header counts by status, open flags by level, and alerts sent or failed. |
 | `rules.py` | `GET /api/rules`: every registered rule with its description, enabled flag, weight and params. |
-| `system.py` | `GET /api/system`: whether alerts go to email or the log, today's alert count against the daily limit, and the thresholds. |
+| `system.py` | Alert mode, configured recipients, usage, and thresholds; `PUT /api/system/notifications` switches delivery for the current server process. |
 
 ### `backend/app/services/` (business logic)
 
@@ -279,6 +291,7 @@ ingest request. Hardening Phases 10–14 of the plan address these.
 | `src/App.jsx` | Layout: dark navigation bar (queue count badge, alert-mode pill, reviewer name) and the stats strip, polled every 10 s. |
 | `src/simulator/scenarios.js` | Browser port of the CLI simulator: the same five scenarios with a seeded generator. Each run tags account IDs so re-runs start clean. |
 | `src/styles.css` | All styling: colour tokens with dark mode, badges (HIGH red, MEDIUM amber, LOW grey…), table, panels, responsive layout. |
+| `public/how-it-works.html` | Standalone responsive workflow guide: ingestion, detection rules, score example, alerts, review lifecycle, and simulator walkthrough. Copied into production builds. |
 | `src/api/client.js` | `fetch` wrapper for every endpoint. It throws `ApiError(status, detail)` with the server's message. |
 | `src/hooks/usePolling.js` | Re-runs a loader every N ms and pauses while the browser tab is hidden. |
 | `src/utils/format.js` | INR formatting (`en-IN`), local date and time, relative "5 minutes ago", and rule-name labels. |

@@ -54,6 +54,7 @@ export default function App() {
 
   return (
     <div className="app">
+      <a className="skip-link" href="#main-content">Skip to content</a>
       <header className="topbar">
         <div className="topbar-inner">
           <NavLink to="/" className="brand">
@@ -67,16 +68,22 @@ export default function App() {
             </NavLink>
             <NavLink to="/simulator">Simulator</NavLink>
             <NavLink to="/rules">Rules</NavLink>
+            <a href="/how-it-works.html">How it works ↗</a>
           </nav>
           <div className="topbar-right">
-            <AlertModePill system={system} />
+            <AlertModePill system={system} onChange={setSystem} />
             <ReviewerName value={reviewer} onChange={setReviewer} />
           </div>
         </div>
       </header>
-      <main>
+      <main id="main-content" tabIndex={-1}>
+        <div className="workspace-heading">
+          <div><span className="eyebrow">RISK OPERATIONS</span><h2>Transaction oversight</h2></div>
+          <span className="workspace-note">Detect. Investigate. Resolve.</span>
+        </div>
         <StatsBar stats={stats} />
         <Outlet context={{ reviewer, refreshStats: refresh, system }} />
+        <footer className="app-footer"><span>Fraud Rule Engine · Reviewer workspace</span><a href="/how-it-works.html">Understand the workflow →</a></footer>
       </main>
     </div>
   );

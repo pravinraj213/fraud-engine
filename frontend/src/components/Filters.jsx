@@ -13,12 +13,11 @@ export default function Filters({ filters, onChange }) {
 
   return (
     <div className="filters">
-      <div className="tabs" role="tablist" aria-label="Status">
+      <div className="tabs" role="group" aria-label="Filter by status">
         {STATUS_TABS.map(([value, label]) => (
           <button
             key={value}
-            role="tab"
-            aria-selected={filters.status === value}
+            aria-pressed={filters.status === value}
             className={filters.status === value ? "tab active" : "tab"}
             onClick={() => onChange({ status: value })}
           >

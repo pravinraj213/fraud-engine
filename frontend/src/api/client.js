@@ -28,6 +28,7 @@ async function request(path, options = {}) {
 export const api = {
   stats: () => request("/stats"),
   system: () => request("/system"),
+  setEmailAlerts: (enabled) => request("/system/notifications", { method: "PUT", body: JSON.stringify({ enabled }) }),
   createTransaction: (body) => request("/transactions", { method: "POST", body: JSON.stringify(body) }),
   rules: () => request("/rules"),
   flags: (params) => request(`/flags?${new URLSearchParams(params)}`),

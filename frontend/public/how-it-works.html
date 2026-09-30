@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Understand how Fraud Rule Engine evaluates transactions, scores risk, sends alerts, and supports human review.">
+  <title>How it works · Fraud Rule Engine</title>
+  <style>
+    :root { color-scheme: light dark; --bg:#f3f5fa; --panel:#fff; --text:#19263c; --muted:#607087; --border:#dce3ed; --blue:#2459d6; --soft:#eaf0ff; --red:#a62620; --red-bg:#fdecea; --green:#216337; --green-bg:#e5f4e8; --amber:#815000; --amber-bg:#fff3dc; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; scroll-padding-top:24px; }
+    body { margin:0; background:var(--bg); color:var(--text); font:16px/1.7 system-ui,-apple-system,"Segoe UI",sans-serif; }
+    a { color:var(--blue); text-underline-offset:4px; }
+    :focus-visible { outline:3px solid var(--blue); outline-offset:5px; }
+    .skip { position:absolute; top:-100px; padding:12px; background:var(--panel); z-index:5; }.skip:focus { top:8px; }
+    .wrap { max-width:1120px; margin:auto; padding:0 28px; }
+    header { background:#0f1b2d; color:#fff; }
+    .bar { display:flex; justify-content:space-between; align-items:center; gap:20px; padding-top:22px; padding-bottom:22px; }
+    .brand { font-weight:700; letter-spacing:-.4px; }.brand span { color:#a9c0ff; margin-right:10px; }
+    .bar a { color:#dae5ff; font-size:14px; text-decoration:none; }
+    .hero { padding:64px 0 52px; background:#0f1b2d; color:#fff; }
+    .eyebrow { display:block; color:var(--muted); letter-spacing:.14em; font-size:11px; font-weight:750; margin-bottom:12px; }
+    .hero .eyebrow { color:#a9c0ff; }
+    h1 { font-size:clamp(34px,5.5vw,60px); line-height:1.12; letter-spacing:-.045em; max-width:790px; margin:0 0 22px; }
+    .hero p { color:#c9d4e3; max-width:680px; margin:0 0 28px; font-size:18px; }
+    .button { display:inline-block; padding:12px 20px; border-radius:8px; background:#2459d6; color:#fff; text-decoration:none; font-weight:650; font-size:14px; }
+    .hero small { display:block; margin-top:18px; color:#a9b6c8; }
+    nav { display:flex; flex-wrap:wrap; gap:10px 24px; padding:20px 0; border-bottom:1px solid var(--border); }
+    nav a { color:var(--muted); font-size:13px; text-decoration:none; font-weight:650; }
+    section { margin:52px 0; }
+    h2 { font-size:30px; line-height:1.25; letter-spacing:-.035em; margin:0 0 12px; }
+    h3 { font-size:17px; line-height:1.4; margin:0 0 10px; }
+    p { margin:0 0 16px; }.intro { max-width:760px; color:var(--muted); margin-bottom:24px; }
+    .flow { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; list-style:none; padding:0; }
+    .card { background:var(--panel); padding:24px; border:1px solid var(--border); border-radius:14px; min-width:0; }
+    .card p { color:var(--muted); font-size:14px; margin:0; }
+    .step { display:inline-grid; place-items:center; width:34px; height:34px; background:var(--soft); color:var(--blue); border-radius:10px; font-weight:700; margin-bottom:24px; font-size:13px; }
+    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+    .rule-number { color:var(--blue); font-size:12px; font-weight:700; display:block; margin-bottom:12px; }
+    .rule-fact { margin-top:20px; padding-top:16px; border-top:1px solid var(--border); font-size:13px; }
+    .formula { padding:22px; border-radius:12px; background:#0f1b2d; color:#dce6fa; font:15px/1.7 ui-monospace,monospace; overflow-wrap:anywhere; margin:24px 0; }
+    .bands { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }.band { border-radius:12px; padding:20px; background:var(--panel); border:1px solid var(--border); }
+    .band strong { display:block; font-size:25px; margin:8px 0; }.band small { display:block; font-size:12px; }.low { background:var(--soft); }.medium { background:var(--amber-bg); color:var(--amber); }.high { background:var(--red-bg); color:var(--red); }
+    .example { display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:center; margin-top:24px; }.calculation { display:grid; gap:10px; }.calculation div { display:flex; justify-content:space-between; gap:12px; border-bottom:1px solid var(--border); padding-bottom:10px; font-size:14px; }.calculation div:last-child { border:0; color:var(--red); font-weight:700; }
+    .split { display:grid; grid-template-columns:1fr 1fr; gap:24px; }.list { padding-left:20px; color:var(--muted); font-size:14px; }.list li { padding:5px 0; }
+    .state { display:inline-block; border-radius:6px; padding:3px 8px; font-size:11px; font-weight:700; background:var(--soft); color:var(--blue); }.state.cleared { background:var(--green-bg); color:var(--green); }
+    .path { margin:18px 0; display:flex; flex-wrap:wrap; align-items:center; gap:10px; }.note { font-size:13px; color:var(--muted); }
+    details { border-top:1px solid var(--border); padding:18px 0; }summary { cursor:pointer; font-weight:650; }details p { margin:12px 0 0; color:var(--muted); font-size:14px; }
+    code { font: .9em ui-monospace,monospace; overflow-wrap:anywhere; }footer { border-top:1px solid var(--border); padding:28px 0 40px; display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; font-size:12px; color:var(--muted); }
+    @media(prefers-color-scheme:dark) { :root { --bg:#0e1116; --panel:#171b22; --text:#e6e9ee; --muted:#a4b0c2; --border:#2a3341; --blue:#95b3ff; --soft:#1d2a47; --red:#ff9d94; --red-bg:#3b1d1b; --green:#98d9a4; --green-bg:#173021; --amber:#ffcd80; --amber-bg:#33270f; } }
+    @media(max-width:800px) { .flow,.bands { grid-template-columns:1fr 1fr; }.grid { grid-template-columns:1fr; }.split,.example { grid-template-columns:1fr; }.hero { padding:40px 0; } }
+    @media(max-width:480px) { .wrap { padding-left:20px; padding-right:20px; }.flow { grid-template-columns:1fr; }.card { padding:20px; }.step { margin-bottom:12px; }.band { padding:14px; }.bar { flex-wrap:wrap; gap:8px; }section { margin:36px 0; }h2 { font-size:26px; }.hero p { font-size:16px; } }
+    @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+    @media print { header,.hero { background:white; color:black; }.hero p,.hero .eyebrow { color:#444; }.button,nav,.skip { display:none; }section { break-inside:avoid; }.card { box-shadow:none; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+  <header><div class="wrap bar"><div class="brand"><span aria-hidden="true">◈</span> Fraud Rule Engine</div><a href="/">← Back to review console</a></div></header>
+  <div class="hero"><div class="wrap">
+    <span class="eyebrow">A GUIDE TO THE WORKFLOW</span>
+    <h1>From transaction to<br>informed decision.</h1>
+    <p>Three explainable rules surface unusual activity. A single risk score helps reviewers prioritize it. Every decision stays attached to the evidence.</p>
+    <a class="button" href="#workflow">Explore the workflow ↓</a>
+    <small>Transaction monitoring · Rule-based scoring · Human review</small>
+  </div></div>
+  <main id="content" class="wrap">
+    <nav aria-label="On this page"><a href="#workflow">01 / Workflow</a><a href="#rules">02 / Detection rules</a><a href="#scoring">03 / Scoring</a><a href="#review">04 / Alerts & review</a><a href="#try">05 / Try it</a></nav>
+    <section id="workflow">
+      <span class="eyebrow">01 / THE BIG PICTURE</span><h2>One transaction. Four steps.</h2>
+      <p class="intro">The API evaluates a transaction against the account’s earlier activity, saves the result, and makes the evidence available to a reviewer.</p>
+      <ol class="flow">
+        <li class="card"><span class="step">01</span><h3>Receive</h3><p>A client or simulator submits the account, amount, merchant, location, and time through <code>POST /api/transactions</code>.</p></li>
+        <li class="card"><span class="step">02</span><h3>Evaluate</h3><p>Enabled rules inspect account history before the new transaction is inserted. Each triggered rule returns a score and a reason.</p></li>
+        <li class="card"><span class="step">03</span><h3>Save & alert</h3><p>The transaction, assessment, and rule hits are stored together in SQLite. A HIGH result schedules an alert in the background.</p></li>
+        <li class="card"><span class="step">04</span><h3>Investigate</h3><p>Flagged transactions enter the review queue. A reviewer examines the evidence, records a decision, and can add a note.</p></li>
+      </ol>
+    </section>
+    <section id="rules">
+      <span class="eyebrow">02 / DETECTION RULES</span><h2>Understand the reason behind the flag.</h2>
+      <p class="intro">These are the default settings. Weights, thresholds, and enabled rules can be configured; the console’s Rules page shows the running configuration.</p>
+      <div class="grid">
+        <article class="card"><span class="rule-number">01 / FREQUENCY</span><h3>Transaction velocity</h3><p>More than five transactions on one account within ten minutes, including the current transaction.</p><div class="rule-fact"><strong>40 points</strong> for the sixth transaction.<br>Each additional transaction adds 15, up to 100.</div></article>
+        <article class="card"><span class="rule-number">02 / SPENDING</span><h3>Unusual amount</h3><p>Compares spending with up to 50 prior amounts. Triggers at a z-score of 3 or at five times the median. A z-score measures how far spending is above the account’s average.</p><div class="rule-fact"><strong>50 points</strong>, or 80 at z ≥ 6 or ≥ 10× median. With fewer than five prior transactions, INR 100,000 or more scores 50.</div></article>
+        <article class="card"><span class="rule-number">03 / LOCATION</span><h3>Impossible travel</h3><p>Checks whether travel from the previous transaction’s location would require a speed above 900 km/h. Distances below 100 km are ignored.</p><div class="rule-fact"><strong>70 points</strong>, or 90 above 1,800 km/h. Qualifying locations at the same moment also score 90.</div></article>
+      </div>
+    </section>
+    <section id="scoring">
+      <span class="eyebrow">03 / RISK SCORING</span><h2>Several signals. One priority.</h2>
+      <p class="intro">The engine multiplies each triggered rule’s score by its weight, adds the results, rounds the total, and caps it at 100. Default weights are all 1.0.</p>
+      <div class="formula">Total score = min(100, round(Σ triggered rule score × weight))</div>
+      <div class="bands">
+        <div class="band"><small>NONE</small><strong>No hits</strong><small>CLEAN · outside the queue</small></div>
+        <div class="band low"><small>LOW</small><strong>Below 40</strong><small>With a rule hit · FLAGGED</small></div>
+        <div class="band medium"><small>MEDIUM</small><strong>40–69</strong><small>FLAGGED · needs review</small></div>
+        <div class="band high"><small>HIGH</small><strong>70–100</strong><small>FLAGGED · alert scheduled</small></div>
+      </div>
+      <div class="card example"><div><h3>A worked example</h3><p>The sixth transaction in ten minutes also triggers the standard unusual-amount rule. Two signals combine into a HIGH assessment.</p></div><div class="calculation"><div><span>Velocity</span><strong>40 × 1.0</strong></div><div><span>Unusual amount</span><strong>50 × 1.0</strong></div><div><span>Total risk score</span><span>90 / 100 · HIGH</span></div></div></div>
+      <p class="note" style="margin-top:14px">A score is a rule-based priority, not a probability of fraud. A score of 90 does not mean a 90% likelihood of fraud.</p>
+    </section>
+    <section id="review">
+      <span class="eyebrow">04 / ALERTS & HUMAN REVIEW</span><h2>Evidence first. A recorded decision next.</h2>
+      <div class="split">
+        <article class="card"><h3>How alerts are delivered</h3><ul class="list"><li>Only HIGH assessments schedule an alert. In log mode, it is written to the server log. In SES mode, it is emailed to configured recipients.</li><li>The email contains transaction details, a risk score, rule explanations, and a link to the reviewer console.</li><li>A unique notification record is claimed before sending to prevent duplicate attempts for the same assessment.</li><li>The default cap is 20 sent alerts per rolling 24 hours. Failed sends and attempts beyond the cap are recorded as FAILED.</li></ul><p>Console links must be reachable from the recipient’s device. Localhost addresses are shown as text with instructions.</p></article>
+        <article class="card"><h3>How reviewers resolve a flag</h3><p>Enter your reviewer name, open a transaction, inspect its rule evidence, and choose the appropriate decision.</p><div class="path"><span class="state">FLAGGED</span><span aria-label="to">→</span><span class="state">REVIEWED</span><span aria-label="to">→</span><span class="state cleared">CLEARED</span></div><ul class="list"><li><strong>Reviewed:</strong> confirmed or escalated as suspicious.</li><li><strong>Cleared:</strong> assessed as legitimate or a false positive. A flagged transaction can also be cleared directly.</li><li>Clearing is final. A reviewed transaction can later be cleared.</li><li>Each action stores the reviewer name, timestamp, and optional note in the review history.</li></ul></article>
+      </div>
+    </section>
+    <section id="try">
+      <span class="eyebrow">05 / TRY THE WORKFLOW</span><h2>See a decision take shape.</h2>
+      <div class="card"><ol class="list"><li>Open the <a href="/simulator">Simulator</a> and check the alert mode. Log mode is the default. To enable email, open <strong>Email alerts off</strong> in the console header, verify the displayed recipient, and select <strong>Turn on email alerts</strong>.</li><li>Select scenarios and run them. Compare expected results with the engine’s actual decisions.</li><li>Open a flagged result to inspect its transaction details and rule evidence.</li><li>Enter a reviewer name, add a note, and mark the transaction reviewed or cleared.</li><li>Return to the <a href="/">review queue</a> and use status, risk, and account filters to find it again.</li></ol><p class="note">The email toggle applies to new transactions for the current server session. Restarting restores the startup setting. Simulator traffic is saved to the same database as other transactions. In email mode, the simulator asks you to acknowledge that it can send real alerts.</p></div>
+    </section>
+    <section aria-labelledby="details-title">
+      <span class="eyebrow">FURTHER DETAILS</span><h2 id="details-title">Under the hood</h2>
+      <details><summary>What runs the system?</summary><p>A React console calls a FastAPI backend. Services manage ingestion and reviews; repositories store transactions, assessments, rule hits, review actions, and notifications in SQLite. Rules read history without writing to the database. Amazon SES delivers email when enabled.</p></details>
+      <details><summary>Can I add or tune a rule?</summary><p>Yes. Configure rule weights and parameters in <code>backend/rules.yaml</code> and the high-risk threshold through <code>HIGH_RISK_THRESHOLD</code>. Restart the backend to load changes. New rules implement the rule interface and register through the existing plugin mechanism. See <code>docs/ADDING_A_RULE.md</code> for a worked example.</p></details>
+      <details><summary>What are the current limitations?</summary><p>Reviewer names are typed in; authentication is not implemented. Background alerts have no durable outbox or automatic retry, so a server interruption can lose an alert. The app uses SQLite and supports INR transactions. This version flags activity for investigation; it does not block payments.</p></details>
+      <details><summary>How are money and time handled?</summary><p>The API accepts and returns money as decimal strings, such as <code>"4999.00"</code>. Timestamps use UTC. Alert emails display the transaction time in UTC; the console formats dates for the reviewer’s locale.</p></details>
+    </section>
+    <footer><span>Fraud Rule Engine · Workflow guide · Default configuration</span><a href="/">Open reviewer console →</a></footer>
+  </main>
+</body>
+</html>
