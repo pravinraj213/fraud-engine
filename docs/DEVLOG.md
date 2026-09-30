@@ -117,3 +117,26 @@ alert links pointed to localhost.
   simulator, rules, transaction detail, workflow guide, and rendered email, with no page overflow.
   Checked notification on/off controls, recipient display, transaction navigation, and dark mode.
   Browser APIs were mocked; no live email was sent. Gmail/Outlook delivery rendering was not tested.
+
+## 2026-09-30 — Sentinel console redesign
+
+- Rebuilt the app shell, navigation, queue, summary cards and risk distribution in a
+  consistent teal/slate visual system. Added desktop/tablet/mobile layouts.
+- Preserved API-backed rules, simulation, review decisions and review history.
+- Added current-page CSV export with formula neutralization, a request sequence
+  guard against stale filter responses, connection status and empty/error states.
+- Changed rule-page copy to analyst-facing language; retained read-only configuration.
+- Verification: 87 backend tests passed, 8 CSV assertions passed, 15/15 simulator
+  checks passed. Browser-verified review and clear transitions, filter resets,
+  pagination, export feedback and responsive layouts.
+- Windows sandbox blocked Vite's child process (`spawn EPERM`). A direct esbuild
+  production bundle succeeded; `frontend/build-portable.ps1` reproduces it on Windows.
+- No engine/business-rule changes. Integrated on top of the latest main branch, preserving notification settings and the workflow guide.
+
+### Integration review
+
+Rebased the UI on main b1f5250, preserving notification settings, alert guards,
+the workflow guide, mobile transaction cards, and all backend changes. Fixed
+out-of-range queue pagination and ensured the portable build copies public assets.
+Current local verification: 93 backend tests, 8 CSV assertions, and portable bundle
+compilation passed. Added GitHub checks for backend tests and the normal Vite build.

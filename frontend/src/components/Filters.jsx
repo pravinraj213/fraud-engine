@@ -1,19 +1,17 @@
 import { useEffect, useState } from "react";
-
+import Icon from "./Icon.jsx";
 const STATUS_TABS = [
-  ["FLAGGED", "Flagged"],
+  ["FLAGGED", "Awaiting review"],
   ["REVIEWED", "Reviewed"],
   ["CLEARED", "Cleared"],
-  ["ALL", "All"],
+  ["ALL", "All flags"],
 ];
-
 export default function Filters({ filters, onChange }) {
   const [account, setAccount] = useState(filters.account_id);
   useEffect(() => setAccount(filters.account_id), [filters.account_id]);
-
   return (
     <div className="filters">
-      <div className="tabs" role="group" aria-label="Filter by status">
+      <div className="tabs" role="group" aria-label="Status">
         {STATUS_TABS.map(([value, label]) => (
           <button
             key={value}
@@ -26,37 +24,47 @@ export default function Filters({ filters, onChange }) {
         ))}
       </div>
       <div className="filter-controls">
-        <label>
-          Risk
-          <select value={filters.risk_level} onChange={(e) => onChange({ risk_level: e.target.value })}>
-            <option value="">Any</option>
-            <option value="HIGH">High</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="LOW">Low</option>
-          </select>
-        </label>
         <form
           onSubmit={(e) => {
             e.preventDefault();
             onChange({ account_id: account.trim() });
           }}
         >
-          <label>
-            Account
+          <label className="account-search">
+            <Icon name="search" size={15} />
             <input
+              aria-label="Search by account ID"
               type="search"
               value={account}
-              placeholder="ACC-1001"
+              placeholder="Search by account ID…"
               onChange={(e) => setAccount(e.target.value)}
-              onBlur={() => account.trim() !== filters.account_id && onChange({ account_id: account.trim() })}
+              onBlur={() =>
+                account.trim() !== filters.account_id &&
+                onChange({ account_id: account.trim() })
+              }
             />
           </label>
         </form>
         <label>
-          Sort
-          <select value={filters.sort} onChange={(e) => onChange({ sort: e.target.value })}>
+          Risk level
+          <select
+            value={filters.risk_level}
+            onChange={(e) => onChange({ risk_level: e.target.value })}
+          >
+            <option value="">All levels</option>
+            <option value="HIGH">High</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LOW">Low</option>
+          </select>
+        </label>
+        <label>
+          Sort by
+          <select
+            value={filters.sort}
+            onChange={(e) => onChange({ sort: e.target.value })}
+          >
             <option value="score">Highest risk</option>
-            <option value="newest">Newest</option>
+            <option value="newest">Newest first</option>
           </select>
         </label>
       </div>
