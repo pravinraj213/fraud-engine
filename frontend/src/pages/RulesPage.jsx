@@ -15,50 +15,85 @@ export default function RulesPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    api.rules().then(setRules).catch((e) => setError(e.message));
+    api
+      .rules()
+      .then(setRules)
+      .catch((e) => setError(e.message));
   }, []);
 
   return (
     <div className="page">
       <header className="page-head">
         <div>
-          <h1>Rules</h1>
+          <h1>
+            Detection rules<span className="heading-dot">.</span>
+          </h1>
           <p className="muted">
-            Understand the signals behind each decision. Triggered rule scores are multiplied by
-            their weight, added together, and capped at 100.
+            Understand how your engine identifies suspicious activity. Scores of
+            triggered rules are multiplied by their weight and summed (capped at
+            100).
           </p>
         </div>
       </header>
 
       {system && (
         <section className="levels">
-          <div className="level-band band-low"><strong>LOW</strong><span>1 – {system.medium_threshold - 1}</span></div>
-          <div className="level-band band-medium"><strong>MEDIUM</strong><span>{system.medium_threshold} – {system.high_risk_threshold - 1}</span></div>
-          <div className="level-band band-high"><strong>HIGH</strong><span>{system.high_risk_threshold}+ · sends an alert</span></div>
+          <div className="level-band band-low">
+            <strong>LOW</strong>
+            <span>1 – {system.medium_threshold - 1}</span>
+          </div>
+          <div className="level-band band-medium">
+            <strong>MEDIUM</strong>
+            <span>
+              {system.medium_threshold} – {system.high_risk_threshold - 1}
+            </span>
+          </div>
+          <div className="level-band band-high">
+            <strong>HIGH</strong>
+            <span>{system.high_risk_threshold}+ · sends an alert</span>
+          </div>
         </section>
       )}
 
-      {error && <div className="banner banner-error" role="alert">{error}</div>}
+      {error && (
+        <div className="banner banner-error" role="alert">
+          {error}
+        </div>
+      )}
       {!rules && !error && <p className="empty">Loading rules…</p>}
       <div className="rule-grid">
         {rules?.map((r) => (
-          <article key={r.name} className={`panel rule-card ${r.enabled ? "" : "disabled"}`}>
+          <article
+            key={r.name}
+            className={`panel rule-card ${r.enabled ? "" : "disabled"}`}
+          >
             <div className="panel-head">
               <h2>{ruleLabel(r.name)}</h2>
-              <span className={`badge ${r.enabled ? "status-cleared" : "risk-none"}`}>{r.enabled ? "Enabled" : "Disabled"}</span>
+              <span
+                className={`badge ${r.enabled ? "status-cleared" : "risk-none"}`}
+              >
+                {r.enabled ? "Enabled" : "Disabled"}
+              </span>
             </div>
             <p>{r.description}</p>
             <dl className="facts compact">
-              <div><dt>Weight</dt><dd>{r.weight}</dd></div>
+              <div>
+                <dt>Weight</dt>
+                <dd>{r.weight}</dd>
+              </div>
               {Object.entries(r.params).map(([k, v]) => (
-                <div key={k}><dt>{k.replace(/_/g, " ")}</dt><dd>{formatParam(v)}</dd></div>
+                <div key={k}>
+                  <dt>{k.replace(/_/g, " ")}</dt>
+                  <dd>{formatParam(v)}</dd>
+                </div>
               ))}
             </dl>
           </article>
         ))}
       </div>
       <p className="muted small">
-        Rules are shown with their current configuration. <a href="/how-it-works.html#rules">Learn how each rule works →</a>
+        Configuration is read-only.{" "}
+        <a href="/how-it-works.html#rules">Learn how each rule works →</a>
       </p>
     </div>
   );

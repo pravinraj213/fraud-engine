@@ -1,17 +1,23 @@
 export default function Pagination({ offset, limit, total, onChange }) {
-  if (total <= limit) return null;
-  const page = Math.floor(offset / limit) + 1;
-  const pages = Math.ceil(total / limit);
+  if (!total) return <span className="muted small">0 transactions</span>;
   return (
     <nav className="pagination" aria-label="Pages">
-      <button disabled={offset === 0} onClick={() => onChange(Math.max(0, offset - limit))}>
-        Previous
-      </button>
       <span>
-        Page {page} of {pages} · {total} items
+        {offset + 1}–{Math.min(offset + limit, total)} of {total}
       </span>
-      <button disabled={offset + limit >= total} onClick={() => onChange(offset + limit)}>
-        Next
+      <button
+        aria-label="Previous page"
+        disabled={offset === 0}
+        onClick={() => onChange(Math.max(0, offset - limit))}
+      >
+        ←
+      </button>
+      <button
+        aria-label="Next page"
+        disabled={offset + limit >= total}
+        onClick={() => onChange(offset + limit)}
+      >
+        →
       </button>
     </nav>
   );

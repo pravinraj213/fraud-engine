@@ -310,3 +310,66 @@ ingest request. Hardening Phases 10–14 of the plan address these.
 | `src/components/RuleHitCard.jsx` | One triggered rule: score × weight = weighted score, the reason, and its key numbers (distance/speed, median/ratio/z, count/window). |
 | `src/components/ReviewPanel.jsx` | Note box (1,000-character counter) and one button per allowed action. Clear asks for confirmation, and the server's 409 message is shown. |
 | `src/components/ReviewHistory.jsx` | Past review actions, newest first: reviewer, action, from → to status, note and time. |
+
+## Sentinel UI (September 2026)
+
+The reviewer console now includes a responsive sidebar, API-backed portfolio summary,
+open-risk distribution, account and risk filters, ten-row pagination, CSV export of the
+current page, rule configuration cards, and the existing review/simulator workflows.
+The interface uses the original API. No fraud scoring rules were changed.
+
+### Run on Windows
+
+From the project folder, open two terminals:
+
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+$env:NOTIFIER = 'log'
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Open http://localhost:5173. Enter a reviewer name in the sidebar, then use Simulator
+and Run scenarios to create sample records. A new install has an empty database.
+The supplied source archive excludes databases, virtual environments, and dependencies.
+
+### Build and verify
+
+- Standard frontend build: `cd frontend; npm run build`.
+- Windows alternative when the host blocks Node child-process creation:
+  `cd frontend; ./build-portable.ps1`. This directly invokes the installed esbuild binary.
+- CSV checks: `cd frontend; node tests/export.test.js`.
+- Backend tests: `cd backend; python -m pytest -q`.
+- The downloadable delivery includes a verified `frontend/dist` bundle; GitHub checkouts must run a frontend build first.
+  Serve it with SPA fallback to `index.html` and proxy `/api` to the backend.
+  Opening the HTML as a file does not start the API.
+
+Validation in this environment: 87 backend tests passed (one upstream deprecation
+warning); 8 CSV assertions passed; simulator showed 15/15 checks passed; browser
+checks covered pagination, filters, empty results, CSV feedback, rules, and
+FLAGGED → REVIEWED → CLEARED with audit history. Desktop and mobile layouts were
+inspected. The normal Vite build was blocked by Windows `spawn EPERM`; the direct
+esbuild build succeeded and was used for the browser checks.
+
+The local preview contains synthetic simulator data only. Existing limitations still
+apply, including no reviewer authentication; the typed reviewer name is an audit
+label, not a sign-in. Deployment and authentication are separate production work.
+
+New frontend files: `components/Icon.jsx`, `components/RiskOverview.jsx`,
+`utils/export.js`, `tests/export.test.js`, and `build-portable.ps1`.
+
+### Open the included build without Node
+
+Build the frontend first (`cd frontend; npm install; npm run build`), or use the
+included compiled bundle in the downloadable delivery. After installing
+`backend/requirements.txt` into a Python environment, run
+`python preview.py` from the project root. It serves the included UI bundle and
+backend together at http://127.0.0.1:5180. Set `NOTIFIER=log` for synthetic demos.
+Stop an existing preview on that port first, or use the normal two-terminal setup.
