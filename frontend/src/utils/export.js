@@ -35,7 +35,7 @@ export function exportTransactions(items) {
   );
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = "sentinel-transactions.csv";
+  anchor.download = "suraksha-transactions.csv";
   anchor.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

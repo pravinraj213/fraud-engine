@@ -1,4 +1,4 @@
-"""Serve the included Sentinel bundle and API together on localhost:5180."""
+"""Serve the included Suraksha bundle and API together on localhost:5180."""
 import os
 from pathlib import Path
 import sys

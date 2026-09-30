@@ -311,7 +311,7 @@ ingest request. Hardening Phases 10–14 of the plan address these.
 | `src/components/ReviewPanel.jsx` | Note box (1,000-character counter) and one button per allowed action. Clear asks for confirmation, and the server's 409 message is shown. |
 | `src/components/ReviewHistory.jsx` | Past review actions, newest first: reviewer, action, from → to status, note and time. |
 
-## Sentinel UI (September 2026)
+## Suraksha UI (September 2026)
 
 The reviewer console now includes a responsive sidebar, API-backed portfolio summary,
 open-risk distribution, account and risk filters, ten-row pagination, CSV export of the
