@@ -1,0 +1,16 @@
+scoring:
+  medium_threshold: 40      # LOW below this, MEDIUM from here
+                            # HIGH comes from HIGH_RISK_THRESHOLD in .env (default 70)
+rules:
+  velocity:
+    enabled: true
+    weight: 1.0
+    params: { window_minutes: 10, max_transactions: 5 }
+  unusual_amount:
+    enabled: true
+    weight: 1.0
+    params: { min_history: 5, lookback: 50, z_threshold: 3.0, median_multiplier: 5, absolute_threshold: 100000 }
+  impossible_travel:
+    enabled: true
+    weight: 1.0
+    params: { max_speed_kmh: 900, min_distance_km: 100 }

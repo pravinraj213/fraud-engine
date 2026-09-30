@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./backend
+    ports: ["8000:8000"]
+    env_file:
+      - path: ./backend/.env
+        required: false
+    environment:
+      DATABASE_URL: sqlite:////data/fraud.db
+    volumes:
+      - db-data:/data
+      - ~/.aws:/root/.aws:ro   # lets NOTIFIER=ses use the fraud-engine profile
+
+  frontend:
+    build: ./frontend
+    ports: ["5173:5173"]
+    environment:
+      API_TARGET: http://backend:8000
+    depends_on: [backend]
+
+volumes:
+  db-data:
