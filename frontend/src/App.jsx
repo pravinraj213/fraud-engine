@@ -66,7 +66,7 @@ export default function App() {
             <Icon name="shield" size={26} />
           </span>
           <span>
-            sentinel<span className="brand-subtitle">FRAUD ENGINE</span>
+            Suraksha<span className="brand-subtitle">FRAUD ENGINE</span>
           </span>
         </NavLink>
         <div className="workspace-switch">
@@ -123,7 +123,7 @@ export default function App() {
             <ReviewerName value={reviewer} onChange={setReviewer} />
           </div>
           <div className="sidebar-foot">
-            Sentinel console <span>v1.0</span>
+            Suraksha console <span>v1.0</span>
           </div>
         </div>
       </aside>
@@ -177,7 +177,7 @@ export default function App() {
           />
           <footer className="content-footer">
             <span>
-              <Icon name="shield" size={14} /> Sentinel · Fraud intelligence,
+              <Icon name="shield" size={14} /> Suraksha · Fraud intelligence,
               explained.
             </span>
             <span>All amounts in INR · Times shown locally</span>

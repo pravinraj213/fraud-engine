@@ -140,3 +140,8 @@ the workflow guide, mobile transaction cards, and all backend changes. Fixed
 out-of-range queue pagination and ensured the portable build copies public assets.
 Current local verification: 93 backend tests, 8 CSV assertions, and portable bundle
 compilation passed. Added GitHub checks for backend tests and the normal Vite build.
+
+## 2026-09-30 — Suraksha branding
+
+Renamed the app to Suraksha in the sidebar, footer, browser title, CSV filename,
+and current product documentation. No changes to API behavior or fraud rules.
