@@ -28,6 +28,42 @@ def render_subject(alert: AlertPayload) -> str:
     return f"[{alert.risk_level} RISK {alert.total_score}] {alert.account_id} · {_money(alert)} at {alert.merchant}"
 
 
+def render_test_subject() -> str:
+    return "Suraksha email delivery test"
+
+
+def render_test_text() -> str:
+    return "\n".join([
+        "Suraksha email delivery test",
+        "",
+        "Your Amazon SES email configuration is working.",
+        "This message was requested from the notification settings in the Suraksha console.",
+        "No transaction was created and automatic fraud alerts were not changed.",
+        "",
+        "You can now use the console to send high-risk transaction alerts.",
+    ])
+
+
+def render_test_html() -> str:
+    return """<!doctype html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suraksha email delivery test</title></head>
+<body style="margin:0;padding:0;background:#f3f5fa;font-family:Arial,Helvetica,sans-serif;color:#19263c">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f3f5fa">
+<tr><td align="center" style="padding:40px 16px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border:1px solid #e0e6ef">
+<tr><td bgcolor="#0f1b2d" style="padding:24px 36px;color:#ffffff">
+<p style="margin:0;font-size:16px;font-weight:bold">Suraksha</p>
+<p style="margin:4px 0 0;font-size:12px;color:#c9d4e3">FRAUD ENGINE</p></td></tr>
+<tr><td style="padding:36px">
+<p style="margin:0 0 12px;font-size:12px;font-weight:bold;letter-spacing:1px;color:#087f73">DELIVERY TEST SUCCESSFUL</p>
+<h1 style="margin:0 0 16px;font-size:28px;line-height:1.2;color:#19263c">Your email configuration is working</h1>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.7;color:#526179">This message was requested from the notification settings in the Suraksha console.</p>
+<p style="margin:0;font-size:14px;line-height:1.7;color:#526179">No transaction was created and automatic fraud alerts were not changed.</p>
+</td></tr></table></td></tr></table></body></html>"""
+
+
 def render_text(alert: AlertPayload) -> str:
     lines = [
         "Transaction requires review",

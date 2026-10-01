@@ -2702,7 +2702,7 @@ h1 {
   right: 0;
   top: calc(100% + 12px);
   z-index: 25;
-  width: 340px;
+  width: 380px;
   max-width: calc(100vw - 32px);
   padding: 22px;
   background: var(--panel);
@@ -2716,8 +2716,116 @@ h1 {
   color: var(--muted);
   font-size: 12px;
 }
+.notification-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.notification-state {
+  flex: none;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.notification-state.is-on {
+  background: var(--green-bg);
+  color: var(--green);
+}
+.notification-state.is-off {
+  background: var(--grey-bg);
+  color: var(--grey);
+}
 .notification-popover button {
   width: 100%;
+}
+.notification-test {
+  margin-top: 18px;
+  padding: 16px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+.notification-test p {
+  margin: 8px 0 14px;
+  line-height: 1.55;
+}
+.notification-test-heading {
+  display: grid;
+  gap: 4px;
+}
+.notification-test-heading strong {
+  font-size: 14px;
+}
+.notification-test-form {
+  display: grid;
+  gap: 12px;
+}
+.notification-field {
+  display: grid;
+  gap: 6px;
+}
+.notification-test-label {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+.notification-test input[type="email"] {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font: inherit;
+}
+.notification-test input[type="email"]:focus {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 1px;
+}
+.notification-field-hint {
+  color: var(--muted);
+  font-size: 10px;
+}
+.notification-consent {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 11px;
+  line-height: 1.45;
+  cursor: pointer;
+}
+.notification-consent input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.notification-consent span {
+  display: grid;
+  gap: 2px;
+}
+.notification-consent strong {
+  color: var(--text);
+  font-size: 11px;
+}
+.notification-consent small {
+  color: var(--muted);
+  font-size: 10px;
+}
+.notification-popover .notification-test-button {
+  margin: 0;
 }
 .notification-recipient {
   overflow-wrap: anywhere;

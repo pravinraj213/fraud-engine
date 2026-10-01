@@ -21,9 +21,6 @@ class Settings(BaseSettings):
     aws_profile: str | None = None
     ses_sender_email: str = ""
     alert_recipient_email: str = ""  # one address, or several separated by commas
-    # Safety cap: at most this many alerts are sent per rolling 24 hours (SES sandbox allows 200).
-    # Alerts beyond the cap are recorded as FAILED and not sent.
-    alert_daily_limit: int = 20
 
     console_base_url: str = "http://localhost:5173"
     cors_origins: str = "http://localhost:5173"

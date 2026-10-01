@@ -34,7 +34,7 @@ log() { printf '\033[1;34m[start]\033[0m %s\n' "$*"; }
 # Email is opt-in: this overrides NOTIFIER in backend/.env for this run.
 if $EMAIL; then
   export NOTIFIER=ses
-  log "Email alerts ON: HIGH-risk transactions send real email through SES (capped per day by ALERT_DAILY_LIMIT)."
+  log "Email alerts ON: HIGH-risk transactions send real email through SES."
 else
   export NOTIFIER=log
   log "Email alerts OFF: alerts are written to the server log. Use --email to send real email."

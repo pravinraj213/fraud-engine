@@ -68,6 +68,17 @@ Built from `docs/IMPLEMENTATION_PLAN.md` (exported from the plan .docx). The ear
 Hardening Phases 10–14 (Postgres + Alembic, outbox worker, auth, smarter rules, load test) are not
 started. Each is a separate step, per the plan.
 
+## 2026-10-01: Test email control
+
+- Added **Send test email** to the header notification menu. A demo participant's address can be entered
+  for a one-time delivery test after confirming their consent; the configured automatic-alert recipient
+  remains unchanged. The menu reports success or failure in place.
+- Added `POST /api/system/notifications/test`. The test works while automatic alerts are off and does
+  not create a transaction, notification record, or change the application alert counter.
+- Added dedicated plain-text and HTML test content using the Suraksha branding.
+- Removed the earlier application-level 20-alert cap after SES production access was approved. AWS SES
+  account quotas remain authoritative. The console no longer displays local quota usage.
+
 ## 2026-09-30: Email safety, simulator UI, console redesign
 
 Prompted by feedback: runs were sending real email without asking, there was no simulator UI, and
@@ -75,8 +86,8 @@ alert links pointed to localhost.
 
 - **Email is opt-in.** `backend/.env` now has `NOTIFIER=log`. `start.sh` forces log mode unless run with
   `--email`, and asks before `--simulate` when email is on.
-- **Daily alert cap** `ALERT_DAILY_LIMIT` (default 20 per rolling 24 h, well under the SES sandbox's
-  200). Alerts beyond it are recorded as FAILED ("Daily alert limit reached") and not sent. Tested.
+- **Historical:** the first sandbox build used an `ALERT_DAILY_LIMIT` safety cap. It was removed after
+  SES production access was approved on 2026-10-01.
 - **`GET /api/system`** (new, beyond the plan's 7 endpoints) exposes the alert mode and usage, so the console can
   show an "Email alerts on/off" pill and require confirmation before a simulator run that would email.
 - **Alert links.** `start.sh` sets `CONSOLE_BASE_URL` to the machine's LAN address (e.g.

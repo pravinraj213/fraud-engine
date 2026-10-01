@@ -1,5 +1,4 @@
 import logging
-from datetime import timedelta
 
 from sqlalchemy.orm import Session
 
@@ -9,15 +8,16 @@ from app.enums import RiskLevel
 from app.models import RiskAssessment
 from app.notifications.base import AlertPayload, Notifier
 from app.notifications.factory import get_notifier
+from app.notifications.ses import SESNotifier
 from app.repositories import assessments, notifications
 from app.services.errors import ConflictError
-from app.timeutils import as_utc, utcnow
+from app.timeutils import as_utc
 
 logger = logging.getLogger(__name__)
 
 
 def configured_notifier(settings: Settings, enabled: bool) -> Notifier:
-    """Switch delivery using only server-configured recipients; never send a test email."""
+    """Switch delivery using only server-configured recipients."""
     if enabled and (not settings.ses_sender_email or not settings.alert_recipients):
         raise ConflictError("Configure SES_SENDER_EMAIL and ALERT_RECIPIENT_EMAIL before enabling email.")
     try:
@@ -27,8 +27,15 @@ def configured_notifier(settings: Settings, enabled: bool) -> Notifier:
         raise ConflictError("Email could not be enabled. Check the server's AWS profile and SES configuration.") from exc
 
 
-def alerts_sent_last_24h(session: Session) -> int:
-    return notifications.count_sent_since(session, utcnow() - timedelta(hours=24))
+def send_test_email(settings: Settings, recipient: str) -> str | None:
+    """Send one SES delivery test to a recipient who requested it."""
+    notifier = configured_notifier(settings, True)
+    if not isinstance(notifier, SESNotifier):
+        raise ConflictError("Email test could not be initialized.")
+    result = notifier.send_test_email(recipient)
+    if not result.success:
+        raise ConflictError(f"Test email failed: {result.error or 'Amazon SES rejected the request.'}")
+    return result.provider_message_id
 
 
 def build_payload(a: RiskAssessment, console_base_url: str) -> AlertPayload:
@@ -53,12 +60,6 @@ def notify_high_risk(assessment_id: str, notifier: Notifier, settings: Settings)
             claim = notifications.claim(session, assessment_id, notifier.channel)
             if claim is None:
                 logger.info("Alert for assessment %s already claimed; skipping", assessment_id)
-                return
-            sent_today = alerts_sent_last_24h(session)
-            if sent_today >= settings.alert_daily_limit:
-                error = f"Daily alert limit reached ({settings.alert_daily_limit} per 24 h); not sent"
-                notifications.finish(session, claim, False, None, error)
-                logger.warning("Alert for assessment %s skipped: %s", assessment_id, error)
                 return
             result = notifier.send_high_risk_alert(build_payload(assessment, settings.console_base_url))
             notifications.finish(session, claim, result.success, result.provider_message_id, result.error)

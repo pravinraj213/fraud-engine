@@ -45,20 +45,6 @@ def test_failure_is_recorded_not_raised(client: TestClient, settings: Settings) 
     assert client.get("/api/stats").json()["notifications"] == {"SENT": 0, "FAILED": 1}
 
 
-def test_daily_limit_stops_sending(client: TestClient, notifier: FakeNotifier, settings: Settings) -> None:
-    client.app.state.settings = settings.model_copy(update={"alert_daily_limit": 2})
-    for account in ("ACC-A", "ACC-B", "ACC-C"):
-        travel_pair(client, account)
-    assert len(notifier.sent) == 2
-    rows = sorted(notification_rows(), key=lambda r: r.status)
-    assert [r.status for r in rows] == ["FAILED", "SENT", "SENT"]
-    assert "Daily alert limit reached" in rows[0].error
-    system = client.get("/api/system").json()
-    assert system == {"notifier": "log", "alert_daily_limit": 2, "alerts_sent_24h": 2,
-                      "medium_threshold": 40, "high_risk_threshold": 70,
-                      "alert_recipients": [], "email_configured": False}
-
-
 def test_unexpected_exception_is_swallowed(client: TestClient) -> None:
     class Exploding(FakeNotifier):
         def send_high_risk_alert(self, alert):

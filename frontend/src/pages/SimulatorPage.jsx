@@ -15,12 +15,11 @@ function EmailGuard({ system, emails, acknowledged, onAcknowledge }) {
       </div>
     );
   }
-  const remaining = Math.max(0, system.alert_daily_limit - system.alerts_sent_24h);
   return (
     <div className="callout callout-warn">
       <div>
         <strong>Email alerts are on.</strong> Every HIGH-risk transaction sends a real email through Amazon
-        SES. {system.alerts_sent_24h} of {system.alert_daily_limit} daily alerts used; {remaining} left.
+        SES to the configured recipient.
       </div>
       <label className="check">
         <input type="checkbox" checked={acknowledged} onChange={(e) => onAcknowledge(e.target.checked)} />

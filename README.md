@@ -52,7 +52,9 @@ cannot be changed through this control. It applies to new transactions in the cu
 restarting restores the startup setting (`./start.sh --email` starts with email enabled). Already queued
 alerts may still be delivered after switching off. The current console has no authentication, so this
 control, like review actions, is intended for a trusted local deployment. Multiple backend workers do
-not share the runtime switch. Successful initialization does not verify SES delivery permissions.
+not share the runtime switch. Under **Delivery test**, enter an address supplied by a consenting demo
+participant and select **Send test email**. This does not change alert mode, the configured automatic-alert
+recipient, or transaction data.
 
 Manual start, if you prefer:
 
@@ -82,7 +84,6 @@ Copy `backend/.env.example` to `backend/.env`. `start.sh` does this for you if t
 | `AWS_REGION` / `AWS_PROFILE` | `ap-south-1` / none | Where and as whom SES is called |
 | `SES_SENDER_EMAIL` | none | Verified sender, e.g. `alerts@pravinraj.me` |
 | `ALERT_RECIPIENT_EMAIL` | none | One address, or several separated by commas |
-| `ALERT_DAILY_LIMIT` | `20` | Safety cap: at most this many alerts per rolling 24 h; extra ones are recorded as FAILED, not sent |
 | `CONSOLE_BASE_URL` | `http://localhost:5173` | Link in alert emails. `start.sh` sets it to this machine's network address so the link opens on other devices on the same network; a localhost link is shown as plain text instead of a button |
 | `CORS_ORIGINS` | `http://localhost:5173` | Allowed browser origins |
 
@@ -120,8 +121,9 @@ file, no engine changes.
 | POST | `/api/transactions/{id}/review` | `{"action": "REVIEWED" \| "CLEARED", "reviewer": "...", "note": "..."}` |
 | GET | `/api/stats` | Counts by status, open flags by level, alerts sent/failed |
 | GET | `/api/rules` | Registered rules with their weight and params |
-| GET | `/api/system` | Alert mode (`ses` or `log`), daily limit and usage, and thresholds (the console uses it to warn before email goes out) |
+| GET | `/api/system` | Alert mode (`ses` or `log`), configured recipients, and risk thresholds |
 | PUT | `/api/system/notifications` | `{"enabled": true \| false}` toggles email for the current server process; uses only configured recipients |
+| POST | `/api/system/notifications/test` | Sends one consent-confirmed SES delivery test to the supplied recipient without changing alert mode |
 
 Money is sent and returned as a string (`"4999.00"`); times are ISO 8601 UTC (`...Z`).
 
@@ -137,9 +139,10 @@ real AWS or touch `fraud.db`. Add `--cov=app/engine --cov=app/services` for cove
 
 ## AWS SES
 
-Set up per the project setup guide: SES in `ap-south-1` (sandbox), sender domain `pravinraj.me`
+Set up per the project setup guide: SES production access in `ap-south-1`, sender domain `pravinraj.me`
 verified with DKIM, and a send-only IAM user `fraud-engine-ses` stored as the `fraud-engine` AWS
-profile. Set `NOTIFIER=ses` in `backend/.env`. In sandbox mode every recipient must be verified.
+profile. Set `NOTIFIER=ses` in `backend/.env`. SES production access allows sending to unverified
+recipients; AWS account quotas still apply.
 The domain uses DKIM because a college or Gmail sender fails DMARC when sent through SES; see
 [docs/DEVLOG.md](docs/DEVLOG.md).
 

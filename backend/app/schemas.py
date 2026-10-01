@@ -1,6 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, Field, StringConstraints
 
@@ -111,8 +111,6 @@ class StatsOut(BaseModel):
 
 class SystemOut(BaseModel):
     notifier: str               # "ses" sends real email, "log" only writes to the server log
-    alert_daily_limit: int
-    alerts_sent_24h: int
     medium_threshold: int
     high_risk_threshold: int
     alert_recipients: list[str]
@@ -122,6 +120,26 @@ class SystemOut(BaseModel):
 class NotificationModeIn(BaseModel):
     model_config = {"extra": "forbid"}
     enabled: bool = Field(strict=True)
+
+
+class TestEmailIn(BaseModel):
+    model_config = {"extra": "forbid"}
+    recipient: Annotated[
+        str,
+        StringConstraints(
+            strip_whitespace=True,
+            min_length=3,
+            max_length=254,
+            pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+        ),
+    ]
+    consent_confirmed: Literal[True]
+
+
+class TestEmailOut(BaseModel):
+    sent: bool
+    recipients: list[str]
+    provider_message_id: str | None
 
 
 class RuleOut(BaseModel):
